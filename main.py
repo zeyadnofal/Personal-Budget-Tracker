@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import StringVar, messagebox
+import os
+import datetime
 
 class BudgetTracker:
     def __init__(self, root) -> None:
@@ -41,6 +43,9 @@ class BudgetTracker:
         self.delete_button = tk.Button(root, text="Delete Transaction", command=self.delete_expense)
         self.delete_button.grid(row=5, column=0, columnspan=2)
         
+        self.export_button = tk.Button(root, text="Export Data", command=self.export_data)
+        self.export_button.grid(row=5, column=2)
+        
         self.balance = tk.Label(root, text=f"Balance: ${self.balanceValue}")
         self.balance.grid(row=6, column=0)
         
@@ -78,6 +83,14 @@ class BudgetTracker:
         else:
             self.expenses_listbox.delete(self.expenses_listbox.curselection())
 
+    def export_data(self):
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        file_name = f"{datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}.txt"
+        with open(os.path.join(script_dir, file_name), 'a') as f:
+            for i in range(0, self.expenses_listbox.size()):
+                f.write(''.join(self.expenses_listbox.get(i)) + '\n')
+            f.write(f"Balance: ${self.balanceValue}  | Income: ${self.incomeValue} | Expenses: ${self.expenseValue}")
+        
 if __name__ == "__main__":
     root = tk.Tk()
     app = BudgetTracker(root)
